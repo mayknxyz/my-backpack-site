@@ -1,0 +1,70 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.4.2/schema.json",
+	"files": {
+		"includes": [
+			"**",
+			"!!**/dist",
+			"!!**/.astro",
+			"!!**/node_modules",
+			"!!**/bun.lock"
+		]
+	},
+	"formatter": {
+		"indentStyle": "tab",
+		"lineWidth": 80
+	},
+	"linter": {
+		"rules": {
+			"recommended": true,
+			"complexity": {
+				"noImportantStyles": "off"
+			}
+		}
+	},
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
+		}
+	},
+	"overrides": [
+		{
+			"includes": ["**/*.astro"],
+			"linter": {
+				"rules": {
+					"correctness": {
+						"noUnusedImports": "off",
+						"noUnusedVariables": "off"
+					},
+					"style": {
+						"useConst": "off",
+						"useImportType": "off",
+						"noUnusedTemplateLiteral": "off",
+						"useTemplate": "off",
+						"noParameterAssign": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["**/*.svelte"],
+			"linter": {
+				"rules": {
+					"correctness": {
+						"noUnusedImports": "off",
+						"noUnusedVariables": "off"
+					},
+					"style": {
+						"useConst": "off",
+						"useImportType": "off",
+						"noUnusedTemplateLiteral": "off",
+						"useTemplate": "off",
+						"noParameterAssign": "off"
+					}
+				}
+			}
+		}
+	],
+	"html": {
+		"parser": {}
+	}
+}

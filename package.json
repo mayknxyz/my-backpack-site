@@ -1,0 +1,22 @@
+{
+	"name": "my-backpack-site",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"dev": "astro dev",
+		"build": "astro build",
+		"preview": "astro preview",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write ."
+	},
+	"dependencies": {
+		"@astrojs/svelte": "^7.2.5",
+		"@tailwindcss/vite": "^4.1.18",
+		"astro": "^5.17.2",
+		"svelte": "^5.51.2",
+		"tailwindcss": "^4.1.18"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.4.2"
+	}
+}

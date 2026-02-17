@@ -1,0 +1,79 @@
+---
+import { Image } from "astro:assets";
+import closedImg from "@assets/my-backpack-logo.png";
+import openImg from "@assets/my-backpack-logo-open.png";
+---
+
+<div
+	class="backpack-logo group relative inline-block"
+	role="img"
+	aria-label="My Backpack logo — a backpack that opens on hover"
+>
+	<Image
+		src={closedImg}
+		alt=""
+		width={320}
+		height={438}
+		loading="eager"
+		fetchpriority="high"
+		class="backpack-closed relative block transition-opacity duration-400 ease-out group-hover:opacity-0"
+	/>
+	<Image
+		src={openImg}
+		alt=""
+		width={320}
+		height={438}
+		loading="eager"
+		class="backpack-open absolute inset-0 block scale-100 opacity-0 transition-all duration-400 ease-out group-hover:scale-[1.02] group-hover:opacity-100"
+	/>
+</div>
+
+<style>
+	.backpack-logo .backpack-closed {
+		animation: breathe 4s ease-in-out infinite;
+	}
+
+	.backpack-logo:hover .backpack-closed,
+	.backpack-logo.is-touched .backpack-closed {
+		animation: none;
+	}
+
+	.backpack-logo.is-touched .backpack-closed {
+		opacity: 0;
+	}
+
+	.backpack-logo.is-touched .backpack-open {
+		opacity: 1;
+		scale: 1.02;
+	}
+
+	@keyframes breathe {
+		0%,
+		100% {
+			scale: 1;
+		}
+		50% {
+			scale: 1.005;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.backpack-logo .backpack-closed {
+			animation: none;
+		}
+
+		.backpack-logo .backpack-closed,
+		.backpack-logo .backpack-open {
+			transition: none;
+		}
+	}
+</style>
+
+<script>
+	const logo = document.querySelector(".backpack-logo");
+	if (logo) {
+		logo.addEventListener("touchstart", () => {
+			logo.classList.toggle("is-touched");
+		});
+	}
+</script>

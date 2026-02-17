@@ -1,0 +1,26 @@
+---
+import BackpackLogo from "@components/molecules/BackpackLogo.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
+---
+
+<BaseLayout>
+	<main
+		id="main"
+		class="flex min-h-screen flex-col items-center justify-center px-4"
+	>
+		<BackpackLogo />
+		<h1
+			class="mt-6 text-center font-sans font-bold text-on-surface"
+			style="font-size: clamp(1.75rem, 4vw, 3rem);"
+		>
+			My Backpack
+		</h1>
+		<p
+			class="mt-2 max-w-md text-center text-on-surface-muted"
+			style="font-size: clamp(0.95rem, 2vw, 1.25rem);"
+		>
+			A curated directory of online tools and web apps — everything you
+			need, in one backpack.
+		</p>
+	</main>
+</BaseLayout>
