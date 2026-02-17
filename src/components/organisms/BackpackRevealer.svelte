@@ -12,7 +12,7 @@ let { closedSrc, openSrc, tools }: Props = $props();
 let isOpen = $state(false);
 let isTouchDevice = $state(false);
 
-function handleMouseEnter() {
+function handleClick() {
 	if (!isTouchDevice) isOpen = true;
 }
 
@@ -34,13 +34,49 @@ function handleKeyDown(e: KeyboardEvent) {
 		isOpen = false;
 	}
 }
+
+let keyBuffer = $state("");
+let keyTimer: ReturnType<typeof setTimeout>;
+
+const shortcuts: Record<string, string> = {};
+for (const tool of tools) {
+	shortcuts[tool.shortCode] = tool.url;
+}
+
+function handleGlobalKeyDown(e: KeyboardEvent) {
+	if (
+		e.target instanceof HTMLInputElement ||
+		e.target instanceof HTMLTextAreaElement
+	)
+		return;
+	if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+	clearTimeout(keyTimer);
+	keyBuffer += e.key.toLowerCase();
+
+	const match = shortcuts[keyBuffer];
+	if (match) {
+		keyBuffer = "";
+		window.open(match, "_blank", "noopener,noreferrer");
+		return;
+	}
+
+	keyTimer = setTimeout(() => {
+		keyBuffer = "";
+	}, 500);
+}
+
+$effect(() => {
+	window.addEventListener("keydown", handleGlobalKeyDown);
+	return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+});
 </script>
 
 <div
 	class="backpack-revealer"
 	role="group"
 	aria-label="My Backpack — hover or activate to explore tools"
-	onmouseenter={handleMouseEnter}
+	onclick={handleClick}
 	onmouseleave={handleMouseLeave}
 	ontouchstart={handleTouchStart}
 >
@@ -68,7 +104,7 @@ function handleKeyDown(e: KeyboardEvent) {
 			height="438"
 			class="backpack-open"
 			class:is-open={isOpen}
-			loading="eager"
+			loading="lazy"
 		/>
 		<span class="sr-only">
 			{isOpen ? "Close backpack" : "Open backpack to see tools"}
@@ -91,8 +127,8 @@ function handleKeyDown(e: KeyboardEvent) {
 				target="_blank"
 				rel="noopener noreferrer"
 			>
-				<span class="tool-emoji" aria-hidden="true">{tool.emoji}</span>
-				<span class="tool-name">{tool.name}</span>
+				<span class="tool-icon" aria-hidden="true">{@html tool.icon}</span>
+				<span class="tool-name">{tool.name}<span class="tool-short-code">[{tool.shortCode}]</span></span>
 			</a>
 		{/each}
 	</nav>
@@ -124,13 +160,14 @@ function handleKeyDown(e: KeyboardEvent) {
 
 	.backpack-closed {
 		display: block;
-		transition: opacity 400ms ease-out;
+		transition: opacity 2400ms ease-out;
 		animation: breathe 4s ease-in-out infinite;
 	}
 
 	.backpack-closed.is-open {
 		opacity: 0;
 		animation: none;
+		transition: opacity 800ms ease-out;
 	}
 
 	.backpack-open {
@@ -140,13 +177,16 @@ function handleKeyDown(e: KeyboardEvent) {
 		opacity: 0;
 		scale: 1;
 		transition:
-			opacity 400ms ease-out,
-			scale 400ms ease-out;
+			opacity 2400ms ease-out,
+			scale 2400ms ease-out;
 	}
 
 	.backpack-open.is-open {
 		opacity: 1;
 		scale: 1.02;
+		transition:
+			opacity 800ms ease-out,
+			scale 800ms ease-out;
 	}
 
 	@keyframes breathe {
@@ -162,20 +202,22 @@ function handleKeyDown(e: KeyboardEvent) {
 	/* Tool items — positioned above the backpack opening */
 	.tool-items {
 		display: flex;
-		flex-wrap: wrap;
+		flex-wrap: nowrap;
 		justify-content: center;
-		gap: 0.5rem;
+		gap: 1.25rem;
 		position: absolute;
-		bottom: 75%;
+		bottom: 110%;
 		left: 50%;
-		translate: -50% 0;
+		translate: -50% 65%;
 		width: max-content;
-		max-width: 280px;
 		pointer-events: none;
 		z-index: 10;
+		transition: translate 800ms ease-out;
+		will-change: translate;
 	}
 
 	.tool-items.is-open {
+		translate: -50% 0;
 		pointer-events: auto;
 	}
 
@@ -183,47 +225,51 @@ function handleKeyDown(e: KeyboardEvent) {
 	.tool-pill {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.375rem;
+		gap: 0.625rem;
 		padding: 0.375rem 0.75rem;
-		background: var(--color-surface-alt);
+		background: transparent;
 		color: var(--color-on-surface);
+		border: 1px solid oklch(1 0 0 / 0.2);
 		border-radius: var(--radius-md);
-		box-shadow: var(--shadow-soft);
+		box-shadow: 0 2px 8px oklch(1 0 0 / 0.15);
 		text-decoration: none;
-		font-size: 0.875rem;
-		font-weight: 500;
+		font-size: 0.5rem;
+		font-weight: 400;
 		white-space: nowrap;
 
-		/* Start state: hidden, shifted down, slightly smaller */
+		/* Start state: hidden, slightly smaller */
 		opacity: 0;
-		translate: 0 20px;
 		scale: 0.8;
 		transition:
-			opacity 350ms ease-out,
-			translate 350ms ease-out,
-			scale 350ms ease-out,
-			background-color 150ms ease,
-			box-shadow 150ms ease;
+			opacity 700ms ease-out,
+			scale 700ms ease-out,
+			font-size 800ms ease-out,
+			border-color 150ms ease;
 		/* Staggered delay based on index */
 		transition-delay: calc(var(--i) * 80ms + 200ms);
 	}
 
 	.tool-items.is-open .tool-pill {
 		opacity: 1;
-		translate: 0 0;
 		scale: 1;
+		font-size: clamp(0.85rem, 3vw, 1.5rem);
 	}
 
-	/* Reverse stagger on close — last item disappears first */
+	/* Reverse stagger on close — last item disappears first, faster */
 	.tool-items:not(.is-open) .tool-pill {
+		transition:
+			opacity 300ms ease-out,
+			scale 300ms ease-out,
+			font-size 300ms ease-out,
+			border-color 150ms ease;
 		transition-delay: calc((var(--total) - 1 - var(--i)) * 50ms);
 	}
 
 	.tool-pill:hover,
 	.tool-pill:focus-visible {
-		background: var(--color-primary);
+		background: transparent;
 		color: white;
-		box-shadow: var(--shadow-lifted);
+		border-color: var(--color-primary);
 		translate: 0 -2px;
 		scale: 1.03;
 	}
@@ -233,9 +279,22 @@ function handleKeyDown(e: KeyboardEvent) {
 		outline-offset: 2px;
 	}
 
-	.tool-emoji {
-		font-size: 1.125rem;
-		line-height: 1;
+	.tool-icon {
+		display: inline-flex;
+		width: 1em;
+		height: 1em;
+		color: oklch(0.6 0 0);
+	}
+
+	.tool-icon :global(svg) {
+		width: 100%;
+		height: 100%;
+	}
+
+	.tool-short-code {
+		color: oklch(0.6 0 0);
+		font-size: 0.5em;
+		margin-left: 0.25em;
 	}
 
 	.sr-only {
@@ -254,6 +313,7 @@ function handleKeyDown(e: KeyboardEvent) {
 	@media (prefers-reduced-motion: reduce) {
 		.backpack-closed,
 		.backpack-open,
+		.tool-items,
 		.tool-pill {
 			transition-duration: 0.01ms !important;
 			transition-delay: 0ms !important;
