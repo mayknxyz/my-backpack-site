@@ -1,5 +1,6 @@
 ---
-import BackpackLogo from "@components/molecules/BackpackLogo.astro";
+import HintButton from "@components/atoms/HintButton.svelte";
+import BackpackHero from "@components/organisms/BackpackHero.astro";
 import BaseLayout from "@layouts/BaseLayout.astro";
 ---
 
@@ -8,19 +9,22 @@ import BaseLayout from "@layouts/BaseLayout.astro";
 		id="main"
 		class="flex min-h-screen flex-col items-center justify-center px-4"
 	>
-		<BackpackLogo />
+		<BackpackHero />
 		<h1
 			class="mt-6 text-center font-sans font-bold text-on-surface"
 			style="font-size: clamp(1.75rem, 4vw, 3rem);"
 		>
-			My Backpack
+			my-backpack
 		</h1>
 		<p
 			class="mt-2 max-w-md text-center text-on-surface-muted"
 			style="font-size: clamp(0.95rem, 2vw, 1.25rem);"
 		>
-			A curated directory of online tools and web apps — everything you
-			need, in one backpack.
+			dev tools I built and use
+			<br />
+			<span style="font-size: 0.8em;">free and open-source</span>
 		</p>
 	</main>
+	<HintButton client:visible text="use your mouse to open the bag" mobileText="tap the bag to open" side="left" />
+	<HintButton client:visible text="use your keyboard to open the tools" side="right" />
 </BaseLayout>

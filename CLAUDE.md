@@ -13,7 +13,7 @@ A directory of online tools and web apps at `mybackpack.mikenavales.xyz`.
 ## Commands
 
 ```sh
-bun run dev       # Start dev server
+bun run dev:local # Start dev server
 bun run build     # Production build
 bun run preview   # Preview production build
 bun run lint      # Lint with Biome
