@@ -1,0 +1,27 @@
+---
+import { getImage } from "astro:assets";
+import closedImg from "@assets/my-backpack-logo.png";
+import openImg from "@assets/my-backpack-logo-open.png";
+import { tools } from "../../data/tools";
+import BackpackRevealer from "./BackpackRevealer.svelte";
+
+const closed = await getImage({
+	src: closedImg,
+	width: 320,
+	height: 438,
+	format: "webp",
+});
+const open = await getImage({
+	src: openImg,
+	width: 320,
+	height: 438,
+	format: "webp",
+});
+---
+
+<BackpackRevealer
+	client:visible
+	closedSrc={closed.src}
+	openSrc={open.src}
+	tools={tools}
+/>
